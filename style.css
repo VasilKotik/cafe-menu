@@ -111,13 +111,3 @@ body {
     margin-top: 1rem;
     margin-bottom: 0;
 }
-
-/* --- Низ сайту (Footer) --- */
-.footer {
-    text-align: center;
-    padding: 2rem;
-    margin-top: 3rem;
-    background-color: #333;
-    color: #f0f8ff;
-    font-size: 0.9rem;
-}
