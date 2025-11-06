@@ -1,0 +1,123 @@
+/* Базові налаштування */
+body {
+    font-family: 'Comfortaa', sans-serif; /* Легкий та чистий шрифт для тексту */
+    margin: 0;
+    padding: 0;
+    background-color: #fcfcf9; /* Дуже світлий, теплий фон */
+    color: #333;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}
+
+/* --- Шапка сайту --- */
+.header {
+    text-align: center;
+    padding: 3rem 1rem 2rem 1rem;
+    background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(240,248,255,1) 100%); /* Світлий градієнт */
+    border-bottom: 2px solid #e0eaf3;
+}
+
+.header-title {
+    font-family: 'Marck Script', cursive; /* ВАШ ПРОПИСНИЙ ШРИФТ */
+    font-size: 4.5rem; /* Великий, щоб привертати увагу */
+    margin: 0;
+    color: #0056b3; /* Глибокий синій (колір волошки) */
+}
+
+.header-subtitle {
+    font-size: 1.3rem;
+    color: #555;
+    margin: 0;
+    font-weight: 700;
+}
+
+/* --- Головна частина (Меню) --- */
+.main {
+    padding-top: 2rem;
+}
+
+/* Завантажувач, поки меню не з'явилось */
+.loader {
+    text-align: center;
+    font-size: 1.5rem;
+    color: #777;
+    padding: 3rem;
+}
+
+/* Заголовок категорії (напр., "Перші страви") */
+.menu-category {
+    font-family: 'Marck Script', cursive;
+    font-size: 3rem;
+    color: #004a99;
+    border-bottom: 2px solid #0056b3;
+    padding-bottom: 0.5rem;
+    margin-top: 2.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Картка окремої страви */
+.menu-item {
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 86, 179, 0.05);
+    overflow: hidden; /* Щоб все було всередині картки */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.menu-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 86, 179, 0.1);
+}
+
+.item-content {
+    padding: 1.5rem 2rem;
+}
+
+.item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px dashed #0056b3;
+}
+
+.item-header h3 {
+    font-family: 'Comfortaa', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #333;
+    margin: 0;
+}
+
+.item-price {
+    font-family: 'Comfortaa', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #0056b3;
+    white-space: nowrap; /* Щоб ціна не переносилась */
+}
+
+.item-description {
+    font-size: 1rem;
+    color: #444;
+    margin-top: 1rem;
+    margin-bottom: 0;
+}
+
+/* --- Низ сайту (Footer) --- */
+.footer {
+    text-align: center;
+    padding: 2rem;
+    margin-top: 3rem;
+    background-color: #333;
+    color: #f0f8ff;
+    font-size: 0.9rem;
+}
