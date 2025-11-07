@@ -1,5 +1,6 @@
-// --- ВАША КОНФІГУРАЦІЯ FIREBASE ---
-// Цей об'єкт дозволяє сайту підключитися до вашого проєкту cafe-menu-6b5e8
+// --- ЕТАП 1: КОНФІГУРАЦІЯ FIREBASE ---
+// ВАЖЛИВО: Замініть цей блок на ВАШУ КОНФІГУРАЦІЮ, 
+// скопійовану з Налаштувань проєкту Firebase!
 const firebaseConfig = {
   apiKey: "AIzaSyDWMzypjRpuaaz099ZunDQojVEUuWSaUz0",
   authDomain: "cafe-menu-6b5e8.firebaseapp.com",
@@ -11,39 +12,50 @@ const firebaseConfig = {
 };
 
 // ----------------------------------------------------
-// КОД, ЯКИЙ КЕРУЄ ЗАВАНТАЖЕННЯМ МЕНЮ
+// --- ЕТАП 2: ІНІЦІАЛІЗАЦІЯ (ЗАПУСК) ---
 // ----------------------------------------------------
 
-// Ініціалізуємо Firebase
+// Ініціалізуємо додаток Firebase з нашою конфігурацією
 firebase.initializeApp(firebaseConfig);
+
+// Отримуємо посилання на Firestore (база даних)
 const db = firebase.firestore();
 
-// Встановлюємо рівень логування для налагодження
+// Вмикаємо детальні лог-повідомлення в консолі для діагностики
 firebase.firestore.setLogLevel('Debug');
 
-// Знаходимо контейнер, куди будемо вставляти меню
+// Знаходимо елемент-контейнер, куди будемо вставляти меню
 const menuContainer = document.getElementById('menu-container');
 
+// ----------------------------------------------------
+// --- ЕТАП 3: ГОЛОВНА ФУНКЦІЯ ЗАВАНТАЖЕННЯ ---
+// ----------------------------------------------------
+
+// Асинхронна функція для отримання та відображення даних
 async function fetchAndDisplayMenu() {
+    
     try {
-        // Отримуємо всі документи (страви) з колекції 'dishes'
+        // 1. ЗАПИТ ДО БАЗИ ДАНИХ FIREBASE
+        // Отримуємо всі документи з колекції 'dishes'
         const snapshot = await db.collection('dishes').get();
 
+        // 2. ПЕРЕВІРКА НА ПОРОЖНЄ МЕНЮ
         if (snapshot.empty) {
-            menuContainer.innerHTML = '<h2 class="loader">Наразі в меню немає страв. Будь ласка, додайте їх у консолі Firebase.</h2>';
+            menuContainer.innerHTML = '<h2 class="loader">Наразі в меню немає страв.</h2>';
             return;
         }
 
+        // 3. ЗБІР ДАНИХ
         let dishes = [];
+        // Перебираємо отримані документи та додаємо їх до масиву
         snapshot.forEach(doc => {
-            // Зберігаємо дані страви у масив
             dishes.push(doc.data());
         });
 
-        // Групуємо страви за категоріями для гарного відображення
+        // 4. ГРУПУВАННЯ ЗА КАТЕГОРІЯМИ
+        // Створюємо об'єкт для зберігання страв, згрупованих за полем 'category'
         const menuByCategory = dishes.reduce((acc, dish) => {
-            // Якщо категорія не вказана у Firebase, використовуємо "Різне"
-            const category = dish.category || 'Різне'; 
+            const category = dish.category || 'Різне';
             if (!acc[category]) {
                 acc[category] = [];
             }
@@ -51,31 +63,42 @@ async function fetchAndDisplayMenu() {
             return acc;
         }, {});
 
-        // Очищуємо контейнер від напису "Завантажуємо..."
+        // 5. ОЧИЩЕННЯ СТОРІНКИ (видаляємо "Завантажуємо меню...")
         menuContainer.innerHTML = '';
 
-        // Сортуємо категорії за алфавітом для логічного порядку
+        // 6. СОРТУВАННЯ ТА ВІДОБРАЖЕННЯ КАТЕГОРІЙ
         const sortedCategories = Object.keys(menuByCategory).sort();
 
-        // Відображаємо категорії та страви
         for (const category of sortedCategories) {
-            // Заголовок категорії
+            // Створюємо заголовок категорії (<h2>)
             const categoryTitle = document.createElement('h2');
             categoryTitle.className = 'menu-category';
             categoryTitle.textContent = category;
             menuContainer.appendChild(categoryTitle);
 
-            // Страви
+            // 7. ВІДОБРАЖЕННЯ СТРАВ У КОЖНІЙ КАТЕГОРІЇ
             menuByCategory[category].forEach(dish => {
+                
                 const menuItem = document.createElement('article');
                 menuItem.className = 'menu-item';
 
-                // Перевіряємо, чи є ціна, і форматуємо її
+                // Форматуємо ціну
                 const priceText = (typeof dish.price === 'number' && dish.price !== 0) 
                                   ? `${dish.price} грн` 
                                   : 'Ціна за запитом';
+                
+                // 8. ЛОГІКА ВІДОБРАЖЕННЯ ФОТОГРАФІЇ
+                let imageHtml = ''; 
+                
+                // Перевіряємо, чи існує поле imageUrl і чи це справжнє посилання
+                if (dish.imageUrl && typeof dish.imageUrl === 'string' && dish.imageUrl.startsWith('http')) {
+                    // Якщо посилання є, створюємо тег <img>
+                    imageHtml = `<img src="${dish.imageUrl}" alt="${dish.name || 'Фото страви'}" class="item-image">`;
+                }
 
+                // 9. ЗБИРАЄМО КАРТКУ СТРАВИ
                 menuItem.innerHTML = `
+                    ${imageHtml}
                     <div class="item-content">
                         <div class="item-header">
                             <h3>${dish.name || 'Назва відсутня'}</h3>
@@ -84,16 +107,20 @@ async function fetchAndDisplayMenu() {
                         <p class="item-description">${dish.description || 'Опис незабаром.'}</p>
                     </div>
                 `;
+                
                 menuContainer.appendChild(menuItem);
             });
         }
 
     } catch (error) {
-        // Якщо сталася помилка підключення (наприклад, неправильні правила безпеки)
-        console.error("Помилка при завантаженні меню. Перевірте Firebase Config та Правила Безпеки:", error);
-        menuContainer.innerHTML = '<h2 class="loader">Помилка завантаження. Перевірте підключення до бази даних.</h2>';
+        // 10. ОБРОБКА ПОМИЛОК
+        // Цей код спрацює, якщо не вдалося підключитися (наприклад, неправильний ключ API)
+        console.error("Помилка при завантаженні меню:", error);
+        menuContainer.innerHTML = '<h2 class="loader">Не вдалося завантажити меню. Перевірте підключення до бази даних.</h2>';
     }
 }
 
-// Запускаємо завантаження меню при старті
+// ----------------------------------------------------
+// --- ЕТАП 4: ЗАПУСК ГОЛОВНОЇ ФУНКЦІЇ ---
+// ----------------------------------------------------
 fetchAndDisplayMenu();
